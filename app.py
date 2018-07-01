@@ -62,7 +62,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def present_scores():
-    stand_dict = get_standings()
+    #stand_dict = get_standings()
 
     with open('./data/playoffs_data.json', 'r') as infile:
         bet_dict = json.load(infile)
