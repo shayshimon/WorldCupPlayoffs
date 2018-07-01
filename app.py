@@ -1,50 +1,75 @@
 from flask import Flask, render_template
-from itertools import groupby
 import requests
 import json
 
 
+def isnumeric(num):
+    try:
+        float(num)
+        return True
+    except:
+        return False
+
+
+def check_time(time_str):
+    if len(time_str) <= 2:
+        return True
+
+    if isnumeric(time_str[2]):
+        return False
+
+    if float(time_str[:2]) <= 90:
+        return True
+    else:
+        return False
+
+
 def get_standings():
-    res = requests.get("http://worldcup.sfg.io/teams/results")
-    sorted_res = sorted(res.json(), key=lambda x: (x['group_letter'], x['points'], x['goal_differential'], x['country']), reverse=True)
-    stand_groups = groupby(sorted_res, key=lambda x: x['group_letter'])
-    house_dict = {}
-    for i, g in stand_groups:
-        house_dict[i] = sorted(list(g), key=lambda x: (x['points'], x['goal_differential'], x['country']), reverse=True)
+    res = requests.get('http://worldcup.sfg.io/matches')
+    matches = filter(lambda x: x['stage_name'] == 'Round of 16' and x['status'] in ['in progress', 'completed'], res.json())
+    matches = map(lambda x: [x['home_team_events'], x['away_team_events'], x['home_team_country'] + ' vs ' + x['away_team_country']], matches)
 
-    return house_dict
+    out_list = []
+    for team_event in matches:
+        score = [0, 0]
+        for xevent in team_event[0]:
+            if check_time(xevent['time']):
+                if 'goal-own' == xevent['type_of_event']:
+                    score[1] += 1
+                elif 'goal' in xevent['type_of_event']:
+                    score[0] += 1
 
+        for xevent in team_event[1]:
+            if check_time(xevent['time']):
+                if 'goal-own' == xevent['type_of_event']:
+                    score[0] += 1
+                elif 'goal' in xevent['type_of_event']:
+                    score[1] += 1
+
+        if score[0] == score[1]:
+            str_score = 'X'
+        elif score[0] > score[1]:
+            str_score = '1'
+        elif score[0] > score[1]:
+            str_score = '0'
+
+        out_list.append({'name': team_event[2], 'result': str_score})
+
+    return out_list
+
+#print get_standings()
 app = Flask(__name__)
 
-@app.route("/")
+@app.route('/')
 def present_scores():
     stand_dict = get_standings()
 
-    with open('./data/bet_poll.json', 'r') as infile:
+    with open('./data/playoffs_data.json', 'r') as infile:
         bet_dict = json.load(infile)
 
-    for item in bet_dict:
-        item_rank = 0
-        for house in stand_dict:
-            house_rank = 0
-            if stand_dict[house][0]['country'] == item[house][0]:
-                house_rank += 3
-            elif item[house][0] == stand_dict[house][1]['country']:
-                house_rank += 2
+    match_name = filter(lambda x: x != 'name', bet_dict[0].keys())
+    return render_template('wc_rank.html', result=bet_dict, match_name=match_name)
 
-            if stand_dict[house][1]['country'] == item[house][1]:
-                house_rank += 3
-            elif item[house][1] == stand_dict[house][0]['country']:
-                house_rank += 2
-
-            item_rank += house_rank
-
-        item['rank'] = item_rank
-
-    sorted_bet_dict = sorted(bet_dict, key=lambda x: x['rank'], reverse=True)
-    abc_list = [chr(i) for i in range(ord('A'), ord('I'))]
-    return render_template("wc_rank.html", result=sorted_bet_dict, abc_list=abc_list, stand_dict=stand_dict)
-
-@app.route("/end_point")
+@app.route('/end_point')
 def endp():
-    return requests.get("http://worldcup.sfg.io/teams/results").text
+    return requests.get('http://worldcup.sfg.io/matches').text
