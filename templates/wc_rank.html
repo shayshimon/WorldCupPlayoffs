@@ -40,7 +40,7 @@
 			{% for item in result %}
 				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
 				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}"><strong>{{ item['name'] }}</strong></td>
-				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">0</td>
+				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ item['rank'] }}</td>
 			{% endfor %}
 		</tr>
 			{% for c in match_name %}
