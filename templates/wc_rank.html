@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>World cup standings</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="static/images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/vendor/perfect-scrollbar/perfect-scrollbar.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="static/css/util.css">
+	<link rel="stylesheet" type="text/css" href="static/css/main.css">
+
+</head>
+<body>
+	<div class="limiter table100 ver1 m-b-110 container-table100">
+	<table class="main_table" data-vertable="ver1">
+		<thead>
+		<tr class="row100 head">
+			{% set cnt = [1] %}
+			<th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">House</th>
+			{% for item in result %}
+				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+				<th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">Name</th><th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">Rank</th>
+			{% endfor %}
+		</tr>
+		</thead>
+		<tr class="row100">
+			{% set cnt = [1] %}
+			<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}"> </td>
+			{% for item in result %}
+				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}"><strong>{{ item['name'] }}</strong></td>
+				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ item['rank'] }}</td>
+			{% endfor %}
+		</tr>
+			{% for c in abc_list %}
+				<tr class="row100">
+					{% set cnt = [1] %}
+					<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ c }}</td>
+				{% for item in result %}
+					{% if c!= 'name' and c!= 'rank' %}
+						{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+						<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ item[c][0] }}</td>
+						<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ item[c][1] }}</td>
+					{% endif %}
+				{% endfor %}
+				</tr>
+			{% endfor %}
+	</table>
+</div>
+<div class="container-small_table100">
+<table>
+	<tr>
+		{% for c in abc_list[:4] %}
+		<td>
+			<div class="small_table">
+			<table calss="small_table">
+				<tr>
+					<td>Country</td><td>Goal diff</td><td>Points</td>
+				</tr>
+				{% for item in stand_dict[c] %}
+				<tr>
+					<td>{{ item['country'] }}</td><td>{{ item['goal_differential'] }}</td><td>{{ item['points'] }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+			</div>
+		</td>
+		{% endfor %}
+	</tr>
+	<tr>
+		{% for c in abc_list[4:] %}
+		<td>
+			<div class="small_table">
+			<table>
+				<tr>
+					<td>Country</td><td>Goal diff</td><td>Points</td>
+				</tr>
+				{% for item in stand_dict[c] %}
+				<tr>
+					<td>{{ item['country'] }}</td><td>{{ item['goal_differential'] }}</td><td>{{ item['points'] }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+			</div>
+		</td>
+		{% endfor %}
+	</tr>
+</table>
+</div>
+<!--===============================================================================================-->
+	<script src="static/vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="static/vendor/bootstrap/js/popper.js"></script>
+	<script src="static/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="static/vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="static/js/main.js"></script>
+<!--===============================================================================================-->	
+</body>
+</html>
