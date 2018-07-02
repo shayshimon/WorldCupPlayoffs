@@ -24,6 +24,15 @@ def check_time(time_str):
         return False
 
 
+def check_extra_time(xtime):
+    if len(xtime) < 3:
+        return False
+    elif isnumeric(xtime[2]):
+        return True
+    else:
+        return int(xtime[:2]) > 90
+
+
 def get_standings():
     res = requests.get('http://worldcup.sfg.io/matches')
     matches = filter(lambda x: x['stage_name'] == 'Round of 16' and x['status'] in ['in progress', 'completed'], res.json())
@@ -31,7 +40,7 @@ def get_standings():
 
     out_list = {}
     for team_event in matches:
-        if team_event[3] == team_event[4]:
+        if team_event[3] == team_event[4] or any(check_extra_time(ev['time']) for ev in team_event[0] + team_event[1]):
             str_score = 'X'
         elif team_event[3] > team_event[4]:
             str_score = '1'
