@@ -23,38 +23,28 @@
 </head>
 <body>
 	<div class="limiter table100 ver1 m-b-110 container-table100">
-	<table class="main_table" data-vertable="ver1">
+	<table class="main_table" data-vertable="ver1" align="center">
 		<thead>
 		<tr class="row100 head">
 			{% set cnt = [1] %}
-			<th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">Match</th>
-			{% for item in result %}
+			<th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">Name</th>
+			{% for item in match_name %}
 				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
-				<th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">Name</th><th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">Rank</th>
+				<th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ item }}</th>
 			{% endfor %}
 		</tr>
 		</thead>
-		<tr class="row100">
-			{% set cnt = [1] %}
-			<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}"> </td>
-			{% for item in result %}
-				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
-				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}"><strong>{{ item['name'] }}</strong></td>
-				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ item['rank'] }}</td>
-			{% endfor %}
-		</tr>
-			{% for c in match_name %}
-				<tr class="row100">
-					{% set cnt = [1] %}
-					<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ c }}</td>
-				{% for item in result %}
-					{% if c!= 'name' and c!= 'rank' %}
-						{% if cnt.append(cnt.pop() + 1) %}{% endif %}
-						<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}" colspan=2 align="center">{{ item[c] }}</td>
-					{% endif %}
+		{% set cnt = [1] %}
+		{% for item in result %}
+			<tr class="row100">
+				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}"><strong>{{ item['name'] }} - {{ item['rank'] }}</strong></td>
+				{% set cnt = [1] %}
+				{% for c in match_name %}
+					{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+					<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}" align="center">{{ item[c] }}</td>
 				{% endfor %}
-				</tr>
-			{% endfor %}
+			</tr>
+		{% endfor %}
 	</table>
 </div>
 <!--===============================================================================================-->

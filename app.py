@@ -48,29 +48,6 @@ def get_standings():
             str_score = '0'
 
         out_list.update({team_event[2]: str_score})
-        #score = [0, 0]
-        #for xevent in team_event[0]:
-        #    if check_time(xevent['time']):
-        #        if 'goal-own' == xevent['type_of_event']:
-        #            score[1] += 1
-        #        elif 'goal' in xevent['type_of_event']:
-        #            score[0] += 1
-
-        #for xevent in team_event[1]:
-        #    if check_time(xevent['time']):
-        #        if 'goal-own' == xevent['type_of_event']:
-        #            score[0] += 1
-        #        elif 'goal' in xevent['type_of_event']:
-        #            score[1] += 1
-
-        #if score[0] == score[1]:
-        #    str_score = 'X'
-        #elif score[0] > score[1]:
-        #    str_score = '1'
-        #elif score[0] > score[1]:
-        #    str_score = '0'
-
-        #out_list.append({'name': team_event[2], 'result': str_score})
 
     return out_list
 
@@ -79,6 +56,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def present_scores():
+    def score2name(score, name_list):
+        if score == 'X':
+            return 'Tie'
+        else:
+            return name_list[int(score) - 1]
+
     stand_dict = get_standings()
 
     with open('./data/playoffs_data.json', 'r') as infile:
@@ -90,6 +73,8 @@ def present_scores():
         for mname in match_name:
             if mname in stand_dict and stand_dict[mname] == str(item[mname]):
                 tmp_rank += 1
+
+            item[mname] = score2name(item[mname], mname.split(' vs '))
 
         item['rank'] = tmp_rank
 
