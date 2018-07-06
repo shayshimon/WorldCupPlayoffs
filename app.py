@@ -33,9 +33,9 @@ def check_extra_time(xtime):
         return int(xtime[:2]) > 90
 
 
-def get_standings():
+def get_standings(round_name='Round of 16'):
     res = requests.get('http://worldcup.sfg.io/matches')
-    matches = filter(lambda x: x['stage_name'] == 'Round of 16' and x['status'] in ['in progress', 'completed'], res.json())
+    matches = filter(lambda x: x['stage_name'] == round_name and x['status'] in ['in progress', 'completed'], res.json())
     matches = map(lambda x: [x['home_team_events'], x['away_team_events'], x['home_team_country'] + ' vs ' + x['away_team_country'], x['home_team']['goals'], x['away_team']['goals']], matches)
 
     out_list = {}
@@ -62,25 +62,36 @@ def present_scores():
         else:
             return name_list[int(score) - 1]
 
-    stand_dict = get_standings()
+    def get_ranks(bet_file_name, round_name):
+        stand_dict = get_standings(round_name = round_name)
 
-    with open('./data/playoffs_data.json', 'r') as infile:
-        bet_dict = json.load(infile)
+        with open(bet_file_name, 'r') as infile:
+            bet_dict = json.load(infile)
 
-    match_name = filter(lambda x: x != 'name', bet_dict[0].keys())
-    for item in bet_dict:
-        tmp_rank = 0
-        for mname in match_name:
-            if mname in stand_dict and stand_dict[mname] == str(item[mname]):
-                tmp_rank += 1
+        match_name = filter(lambda x: x != 'name', bet_dict[0].keys())
+        for item in bet_dict:
+            tmp_rank = 0
+            for mname in match_name:
+                if mname in stand_dict and stand_dict[mname] == str(item[mname]):
+                    tmp_rank += 1
 
-            item[mname] = score2name(item[mname], mname.split(' vs '))
+                item[mname] = score2name(item[mname], mname.split(' vs '))
 
-        item['rank'] = tmp_rank
+            item['rank'] = tmp_rank
 
-    sorted_bet_dict = sorted(bet_dict, key=lambda x: x['rank'], reverse=True)
+        return sorted(bet_dict, key=lambda x: x['rank'], reverse=True), match_name
 
-    return render_template('wc_rank.html', result=sorted_bet_dict, match_name=match_name)
+    sorted_bet_dict, match_name = get_ranks('./data/playoffs_data.json', 'Round of 16')
+    sorted_bet_dict2, match_name2 = get_ranks('./data/playoffs_data2.json', 'Quarter-finals')
+
+    for item in sorted_bet_dict2:
+        prev_item = filter(lambda x: x['name'] == item['name'], sorted_bet_dict)
+        if prev_item:
+            item['rank'] = prev_item[0]['rank'] + item['rank'] * 2
+
+    sorted_bet_dict2 = sorted(sorted_bet_dict2, key=lambda x: x['rank'], reverse=True)
+
+    return render_template('wc_rank.html', result=sorted_bet_dict, match_name=match_name, result2=sorted_bet_dict2, match_name2=match_name2)
 
 @app.route('/end_point')
 def endp():

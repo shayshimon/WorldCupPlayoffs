@@ -23,7 +23,33 @@
 </head>
 <body>
 	<div class="limiter table100 ver1 m-b-110 container-table100">
-	<table class="main_table" data-vertable="ver1" align="center">
+	<table class="main_table" data-vertable="ver1">
+		<thead>
+		<tr class="row100 head">
+			{% set cnt = [1] %}
+			<th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">Name</th>
+			{% for item in match_name2 %}
+				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+				<th class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}">{{ item }}</th>
+			{% endfor %}
+		</tr>
+		</thead>
+		{% set cnt = [1] %}
+		{% for item in result2 %}
+			<tr class="row100">
+				<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}"><strong>{{ item['name'] }} - {{ item['rank'] }}</strong></td>
+				{% set cnt = [1] %}
+				{% for c in match_name2 %}
+					{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+					<td class="column100 column{{ cnt[0] }}" data-column="column{{ cnt[0] }}" align="center">{{ item[c] }}</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+
+	<div style="clear:both;"></div>
+
+	<table class="main_table" data-vertable="ver2">
 		<thead>
 		<tr class="row100 head">
 			{% set cnt = [1] %}
