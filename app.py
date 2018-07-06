@@ -44,8 +44,10 @@ def get_standings(round_name='Round of 16'):
             str_score = 'X'
         elif team_event[3] > team_event[4]:
             str_score = '1'
-        elif team_event[3] > team_event[4]:
-            str_score = '0'
+        elif team_event[3] < team_event[4]:
+            str_score = '2'
+        else:
+            print team_event
 
         out_list.update({team_event[2]: str_score})
 
@@ -63,7 +65,7 @@ def present_scores():
             return name_list[int(score) - 1]
 
     def get_ranks(bet_file_name, round_name):
-        stand_dict = get_standings(round_name = round_name)
+        stand_dict = get_standings(round_name=round_name)
 
         with open(bet_file_name, 'r') as infile:
             bet_dict = json.load(infile)
@@ -88,6 +90,8 @@ def present_scores():
         prev_item = filter(lambda x: x['name'] == item['name'], sorted_bet_dict)
         if prev_item:
             item['rank'] = prev_item[0]['rank'] + item['rank'] * 2
+        else:
+            item['rank'] = item['rank'] * 2
 
     sorted_bet_dict2 = sorted(sorted_bet_dict2, key=lambda x: x['rank'], reverse=True)
 
