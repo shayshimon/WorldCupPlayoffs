@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 
-df = pd.read_csv('./data/playoffs_data2.csv')
+df = pd.read_csv('./data/playoffs_data3.csv')
 cols = filter(lambda x: '[' in x, df.columns)
 cols = map(lambda x: x[x.find('[') + 1:x.find(']')], cols)
 
@@ -12,5 +12,5 @@ for i, row in df.iterrows():
     tmp_dict['name'] = row[1]
     out_list.append(tmp_dict)
 
-with open('./data/playoffs_data2.json', 'w') as outfile:
+with open('./data/playoffs_data3.json', 'w') as outfile:
     json.dump(out_list, outfile)
