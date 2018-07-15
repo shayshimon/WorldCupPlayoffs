@@ -86,10 +86,14 @@ def present_scores():
     sorted_bet_dict, match_name = get_ranks('./data/playoffs_data.json', 'Round of 16')
     sorted_bet_dict2, match_name2 = get_ranks('./data/playoffs_data2.json', 'Quarter-finals')
     sorted_bet_dict3, match_name3 = get_ranks('./data/playoffs_data3.json', 'Semi-finals')
+    sorted_bet_dict4, match_name4 = get_ranks('./data/playoffs_data4.json', 'Play-off for third place')
+    sorted_bet_dict5, match_name5 = get_ranks('./data/playoffs_data4.json', 'Final')
 
-    for item in sorted_bet_dict3:
+    for item in sorted_bet_dict5:
         prev_rank = 0
         prev_rank2 = 0
+        prev_rank3 = 0
+        prev_rank4 = 0
 
         prev_item = filter(lambda x: x['name'] == item['name'], sorted_bet_dict)
         if prev_item:
@@ -99,11 +103,20 @@ def present_scores():
         if prev_item2:
             prev_rank2 = prev_item2[0]['rank']
 
-        item['rank'] = prev_rank + prev_rank2 * 2 + item['rank'] * 3
+        prev_item3 = filter(lambda x: x['name'] == item['name'], sorted_bet_dict3)
+        if prev_item3:
+            prev_rank3 = prev_item3[0]['rank']
 
-    sorted_bet_dict3 = sorted(sorted_bet_dict3, key=lambda x: x['rank'], reverse=True)
+        prev_item4 = filter(lambda x: x['name'] == item['name'], sorted_bet_dict4)
+        if prev_item4:
+            prev_rank4 = prev_item4[0]['rank']
 
-    return render_template('wc_rank.html', result=sorted_bet_dict, match_name=match_name, result2=sorted_bet_dict3, match_name2=match_name3)
+        item['rank'] = prev_rank + prev_rank2 * 2  + (prev_rank3 + prev_rank4) * 3 + item['rank'] * 4
+
+    #sorted_bet_dict4.extend(sorted_bet_dict5)
+    sorted_bet_dict5 = sorted(sorted_bet_dict5, key=lambda x: x['rank'], reverse=True)
+
+    return render_template('wc_rank.html', result=sorted_bet_dict, match_name=match_name, result2=sorted_bet_dict5, match_name2=match_name5)
 
 @app.route('/end_point')
 def endp():
